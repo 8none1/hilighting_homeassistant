@@ -14,6 +14,10 @@ My lights report their name as: `L7161` and have a MAC address of `23:01:02:aa:1
 As with the [ELK-BLEDOB](https://github.com/8none1/elk-bledob) project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
 So let's breakout Wireshark and go fishing...
 
+## Current State
+
+The integration currently allows you to toggle the device on and off, and that's all.  Additional features will be forthcoming.
+
 ## Sniffing
 
 Tips if you're using Wireshark and a nRF52840 with the Nordic toolkit:
@@ -23,7 +27,9 @@ Tips if you're using Wireshark and a nRF52840 with the Nordic toolkit:
 
 ## What the....
 
-It looks like this set of lights offers a serial port over Bluetooth LE and then you send commands to it that way. 
+It looks like this set of lights offers a serial port over Bluetooth LE and then you send commands to it that way.
+Had a chat on the Home Assistant Discord and the feeling is that if it's GATT then it should just work, so I'm going to try and implement a simple on/off integration before digging in to all the complex stuff.
+... and ...  it does indeed just work.
 
 ## Power on & off
 
