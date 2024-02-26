@@ -16,7 +16,16 @@ So let's breakout Wireshark and go fishing...
 
 ## Current State
 
-The integration currently allows you to toggle the device on and off, and that's all.  Additional features will be forthcoming.
+Working:
+
+- On / Off
+- Set RGB colour
+
+Next:
+
+- Brightness
+- Effects
+- Status updates?
 
 ## Sniffing
 
