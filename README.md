@@ -27,11 +27,10 @@ It looks like this set of lights offers a serial port over Bluetooth LE and then
 
 ## Power on & off
 
-If you have a BLE UART connection you just write these bytes to the serial port:
+If you have a BLE UART connection you just write these bytes to the serial port.  Using an app like [LightBlue](https://punchthrough.com/lightblue/) you can connect to the controller, connect to `6e400002-b5a3-f393-e0a9-e50e24dcca9e` and write these hex bytes.
 
-`55 01 02 00` Off
-
-`55 01 02 01` On
+- `55 01 02 00` Off
+- `55 01 02 01` On
 
 ## Other projects that might be of interest
 
