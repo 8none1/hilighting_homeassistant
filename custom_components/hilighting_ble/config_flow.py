@@ -28,7 +28,7 @@ class DeviceData(BluetoothData):
         LOGGER.debug("Discovered bluetooth devices, DeviceData, : %s , %s", self._discovery.address, self._discovery.name)
 
     def supported(self):
-        return self._discovery.name.lower().startswith("L7161")
+        return self._discovery.name.lower().startswith("l7161")
 
     def address(self):
         return self._discovery.address
