@@ -279,7 +279,7 @@ class HILIGHTINGInstance:
         b = brightness * 150
         b += 27650
         if b > 65295: b = 65295
-        brightness_packet[3] = b >> 8
+        brightness_packet[3] = (b >> 8) & 0xFF
         brightness_packet[4] = b & 0xff
         await self._write(brightness_packet)
     
