@@ -38,6 +38,19 @@ If you have a BLE UART connection you just write these bytes to the serial port.
 - `55 01 02 00` Off
 - `55 01 02 01` On
 
+## RGB
+
+```
+|------|------------------------ header
+|      | ||--------------------- red
+|      | || ||------------------ green
+|      | || || ||--------------- blue
+55 07 01 ff 00 00
+55 07 01 00 ff 00
+55 07 01 00 00 ff
+```
+
+
 ## Other projects that might be of interest
 
 - [iDotMatrix](https://github.com/8none1/idotmatrix)

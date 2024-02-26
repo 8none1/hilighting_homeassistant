@@ -254,23 +254,22 @@ class HILIGHTINGInstance:
     @retry_bluetooth_connection_error
     async def set_rgb_color(self, rgb: Tuple[int, int, int]):
         """
-        |---------|--------------------- header
-        |         | ||------------------ red
-        |         | || ||--------------- green
-        |         | || || ||------------ blue
-        |         | || || || |---|------ footer
-        7e 07 05 03 ff 00 00 10 ef
-        7e 07 05 03 00 ff 00 10 ef
-        7e 07 05 03 00 00 ff 10 ef
+            |------|------------------------ header
+            |      | ||--------------------- red
+            |      | || ||------------------ green
+            |      | || || ||--------------- blue
+            55 07 01 ff 00 00
+            55 07 01 00 ff 00
+            55 07 01 00 00 ff
         """
         self._rgb_color = rgb
         red = int(rgb[0])
         green = int(rgb[1])
         blue = int(rgb[2])
-        rgb_packet = bytearray.fromhex("7e 07 05 03 ff 00 00 10 ef")
-        rgb_packet[4] = red
-        rgb_packet[5] = green
-        rgb_packet[6] = blue
+        rgb_packet = bytearray.fromhex("55 07 01 00 00 00")
+        rgb_packet[3] = red
+        rgb_packet[4] = green
+        rgb_packet[5] = blue
         await self._write(rgb_packet)
     
     @retry_bluetooth_connection_error
@@ -278,7 +277,7 @@ class HILIGHTINGInstance:
         self._brightness = brightness
         brightness_packet = bytearray.fromhex("7e 04 01 01 01 ff 02 01 ef")
         brightness_packet[3] = int((brightness / 255) * 100)
-        await self._write(brightness_packet)
+        #await self._write(brightness_packet)
     
     @retry_bluetooth_connection_error
     async def set_effect(self, effect: str):
@@ -291,7 +290,7 @@ class HILIGHTINGInstance:
         LOGGER.debug('Effect ID: %s', effect_id)
         LOGGER.debug('Effect name: %s', effect)
         effect_packet[3] = effect_id
-        await self._write(effect_packet)
+        #await self._write(effect_packet)
 
     @retry_bluetooth_connection_error
     async def update(self):
