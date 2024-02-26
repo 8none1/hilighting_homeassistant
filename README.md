@@ -11,7 +11,7 @@ AliExpress link:  https://www.aliexpress.com/item/1005005485885067.html
 
 My lights report their name as: `L7161` and have a MAC address of `23:01:02:aa:10:84`.
 
-As with the (ELK-BLEDOB)[https://github.com/8none1/elk-bledob] project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
+As with the [ELK-BLEDOB](https://github.com/8none1/elk-bledob) project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
 So let's breakout Wireshark and go fishing...
 
 ## Sniffing
