@@ -58,7 +58,24 @@ If you have a BLE UART connection you just write these bytes to the serial port.
 55 07 01 00 ff 00
 55 07 01 00 00 ff
 ```
+## Brightness
 
+Brightness is odd.
+
+```
+|------|------------------------ header
+|      | |---|------------------ brightness
+55 03 01 09 03
+55 03 01 6c 02
+55 03 01 6f 05
+```
+
+Minimum brightness is 0x6c 0x02 (27650)
+Maximum brightness is 0xff 0x0f (65295)
+
+If we scale this to 8 bits as used in Home Assistant, then one interval is about 0x96 (150).  Soooo if we take the brightness as passed to us by HA and multiply it by 150 and add 27650 then we should get the correct brightness.  I mean, what?
+
+Best guess here is that the second byte is a actually a word between 0x0 and 0xf which gives us 15 increments. Why on earth do we need 16bit brightness?
 
 ## Other projects that might be of interest
 
