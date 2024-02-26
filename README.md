@@ -11,7 +11,6 @@ AliExpress link:  https://www.aliexpress.com/item/1005005485885067.html
 
 My lights report their name as: `L7161` and have a MAC address of `23:01:02:aa:10:84`.
 
-
 As with the (ELK-BLEDOB)[https://github.com/8none1/elk-bledob] project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
 So let's breakout Wireshark and go fishing...
 
@@ -20,7 +19,23 @@ So let's breakout Wireshark and go fishing...
 Tips if you're using Wireshark and a nRF52840 with the Nordic toolkit:
 
 - Filter `btle.length != 0` will hide empty PDU packets
+- Filter `btatt.handle == 0x0014` will show writes to the serial port
 
 ## What the....
 
 It looks like this set of lights offers a serial port over Bluetooth LE and then you send commands to it that way. 
+
+## Power on & off
+
+If you have a BLE UART connection you just write these bytes to the serial port:
+
+`55 01 02 00` Off
+`55 01 02 01` On
+
+## Other projects that might be of interest
+
+- [iDotMatrix](https://github.com/8none1/idotmatrix)
+- [Zengge LEDnet WF](https://github.com/8none1/zengge_lednetwf)
+- [iDealLED](https://github.com/8none1/idealLED)
+- [BJ_LED](https://github.com/8none1/bj_led)
+- [ELK BLEDOB](https://github.com/8none1/elk-bledob)
