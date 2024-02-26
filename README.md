@@ -30,6 +30,7 @@ It looks like this set of lights offers a serial port over Bluetooth LE and then
 If you have a BLE UART connection you just write these bytes to the serial port:
 
 `55 01 02 00` Off
+
 `55 01 02 01` On
 
 ## Other projects that might be of interest
