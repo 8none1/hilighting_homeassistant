@@ -270,6 +270,8 @@ class HILIGHTINGInstance:
         LOGGER.debug('Effect name: %s', effect)
         effect_packet[3] = effect_id
         await self._write(effect_packet)
+        speed_packet = bytearray.fromhex("55 04 04 7f") # Hard code the speed to 50% ish
+        await self._write(speed_packet)
 
     @retry_bluetooth_connection_error
     async def update(self):

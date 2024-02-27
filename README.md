@@ -16,16 +16,14 @@ So let's breakout Wireshark and go fishing...
 
 ## Current State
 
+Planned implementation complete.
+
 Working:
 
 - On / Off
 - Set RGB colour
 - Brightness
-
-Next:
-
-- Effects
-- Status updates?
+- Limited effects with a fixed speed
 
 ## Sniffing
 
@@ -77,7 +75,7 @@ It seems that the two brightness bytes do not represent a single value.  Byte 4,
 
 ## Effects
 
-The standard effects numbered from 0 to ?.  You don't seem to be able to specify a brightness or speed for them.
+The standard effects numbered from 0 to 9.  You don't seem to be able to specify a brightness for them.
 
 ```
 |---|--------------------------- header
@@ -93,7 +91,7 @@ The standard effects numbered from 0 to ?.  You don't seem to be able to specify
 
 ```
 |---|--------------------------- header
-|   | ||------------------------ select effect speed
+|   | ||------------------------ select effect speed (0-255)
 |   | || ||--------------------- speed
 55 04 04 31
 55 04 04 59
@@ -103,6 +101,9 @@ The standard effects numbered from 0 to ?.  You don't seem to be able to specify
 ```
 
 #### Custom Effects
+
+We could build a set of custom effects and hard code them as part of the integration.  But I'm not planning on doing that any time soon.  The format seems easy enough to understand.
+
 
 ```
 
@@ -128,3 +129,4 @@ The standard effects numbered from 0 to ?.  You don't seem to be able to specify
 - [iDealLED](https://github.com/8none1/idealLED)
 - [BJ_LED](https://github.com/8none1/bj_led)
 - [ELK BLEDOB](https://github.com/8none1/elk-bledob)
+- [HiLighting LED](https://github.com/8none1/hilighting_homeassistant)
