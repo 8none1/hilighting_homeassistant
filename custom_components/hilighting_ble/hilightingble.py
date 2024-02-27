@@ -280,7 +280,7 @@ class HILIGHTINGInstance:
         b += 27650
         if b > 65295: b = 65295
         brightness_packet[3] = (b >> 8) & 0xFF
-        brightness_packet[4] = b & 0xff
+        brightness_packet[4] = b & 0x0f
         await self._write(brightness_packet)
     
     @retry_bluetooth_connection_error
