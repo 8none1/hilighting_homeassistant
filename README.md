@@ -73,9 +73,7 @@ Brightness is odd.
 Minimum brightness is 0x6c 0x02 (27650)
 Maximum brightness is 0xff 0x0f (65295)
 
-If we scale this to 8 bits as used in Home Assistant, then one interval is about 0x96 (150).  Soooo if we take the brightness as passed to us by HA and multiply it by 150 and add 27650 then we should get the correct brightness.  I mean, what?
-
-Best guess here is that the second byte is a actually a word between 0x0 and 0xf which gives us 15 increments. Why on earth do we need 16bit brightness?
+It seems that the two brightness bytes do not represent a single value.  
 
 ## Other projects that might be of interest
 

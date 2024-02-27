@@ -276,11 +276,10 @@ class HILIGHTINGInstance:
     async def set_brightness(self, brightness: int):
         self._brightness = brightness
         brightness_packet = bytearray.fromhex("55 03 01 09 03")
-        b = brightness * 150
-        b += 27650
-        if b > 65295: b = 65295
-        brightness_packet[3] = (b >> 8) & 0xFF
-        brightness_packet[4] = b & 0x0f
+        b = int(brightness * 0.06)
+        if b > 0x0f:
+            b = 0x0f
+        brightness_packet[4] = b
         await self._write(brightness_packet)
     
     @retry_bluetooth_connection_error
