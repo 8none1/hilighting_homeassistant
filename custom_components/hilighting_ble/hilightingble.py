@@ -22,52 +22,52 @@ import colorsys
 
 LOGGER = logging.getLogger(__name__)
 
-EFFECT_0  = "three color jump"
-EFFECT_1  = "seven color jump"
-EFFECT_2  = "three color cross fade"
-EFFECT_3  = "seven color cross fade"
-EFFECT_4  = "red fade"
-EFFECT_5  = "green fade"
-EFFECT_6  = "blue fade"
-EFFECT_7  = "yellow fade"
-EFFECT_8  = "cyan fade"
-EFFECT_9  = "magenta fade"
-EFFECT_10 = "white fade"
-EFFECT_11 = "red green cross fade"
-EFFECT_12 = "red blue cross fade"
-EFFECT_13 = "green blue cross fade"
-EFFECT_14 = "seven color strobe flash"
-EFFECT_15 = "red strobe flash"
-EFFECT_16 = "green strobe flash"
-EFFECT_17 = "blue strobe flash"
-EFFECT_18 = "yellow strobe flash"
-EFFECT_19 = "cyan strobe flash"
-EFFECT_20 = "magenta strobe flash"
-EFFECT_21 = "white strobe flash"
+EFFECT_0  = "effect 0"
+EFFECT_1  = "effect 1"
+EFFECT_2  = "effect 2"
+EFFECT_3  = "effect 3"
+EFFECT_4  = "effect 4"
+EFFECT_5  = "effect 5"
+EFFECT_6  = "effect 6"
+EFFECT_7  = "effect 7"
+EFFECT_8  = "effect 8"
+EFFECT_9  = "effect 9"
+EFFECT_10 = "effect 10"
+EFFECT_11 = "effect 11"
+EFFECT_12 = "effect 12"
+EFFECT_13 = "effect 13"
+EFFECT_14 = "effect 14"
+EFFECT_15 = "effect 15"
+EFFECT_16 = "effect 16"
+EFFECT_17 = "effect 17"
+EFFECT_18 = "effect 18"
+EFFECT_19 = "effect 19"
+EFFECT_20 = "effect 20"
+EFFECT_21 = "effect 21"
 
 EFFECT_MAP = {
-    EFFECT_0: 0x87,
-    EFFECT_1: 0x88,
-    EFFECT_2: 0x89,
-    EFFECT_3: 0x8a,
-    EFFECT_4: 0x8b,
-    EFFECT_5: 0x8c,
-    EFFECT_6: 0x8d,
-    EFFECT_7: 0x8e,
-    EFFECT_8: 0x8f,
-    EFFECT_9: 0x90,
-    EFFECT_10: 0x91,
-    EFFECT_11: 0x92,
-    EFFECT_12: 0x93,
-    EFFECT_13: 0x94,
-    EFFECT_14: 0x95,
-    EFFECT_15: 0x96,
-    EFFECT_16: 0x97,
-    EFFECT_17: 0x98,
-    EFFECT_18: 0x99,
-    EFFECT_19: 0x9a,
-    EFFECT_20: 0x9b,
-    EFFECT_21: 0x9c
+    EFFECT_0: 0,
+    EFFECT_1: 1,
+    EFFECT_2: 2,
+    EFFECT_3: 3,
+    EFFECT_4: 4,
+    EFFECT_5: 5,
+    EFFECT_6: 6,
+    EFFECT_7: 7,
+    EFFECT_8: 8,
+    EFFECT_9: 9,
+    EFFECT_10:10,
+    EFFECT_11:11,
+    EFFECT_12:12,
+    EFFECT_13:13,
+    EFFECT_14:14,
+    EFFECT_15:15,
+    EFFECT_16:16,
+    EFFECT_17:17,
+    EFFECT_18:18,
+    EFFECT_19:19,
+    EFFECT_20:20,
+    EFFECT_21:21
 }
 
 EFFECT_LIST = sorted(EFFECT_MAP)
@@ -275,7 +275,7 @@ class HILIGHTINGInstance:
     @retry_bluetooth_connection_error
     async def set_brightness(self, brightness: int):
         self._brightness = brightness
-        brightness_packet = bytearray.fromhex("55 03 01 09 03")
+        brightness_packet = bytearray.fromhex("55 03 01 ff 03")
         b = int(brightness * 0.06)
         if b > 0x0f:
             b = 0x0f
@@ -288,12 +288,12 @@ class HILIGHTINGInstance:
             LOGGER.error("Effect %s not supported", effect)
             return
         self._effect = effect
-        effect_packet = bytearray.fromhex("7e 07 03 93 03 ff ff 00 ef")
+        effect_packet = bytearray.fromhex("55 04 01 00")
         effect_id = EFFECT_MAP.get(effect)
         LOGGER.debug('Effect ID: %s', effect_id)
         LOGGER.debug('Effect name: %s', effect)
         effect_packet[3] = effect_id
-        #await self._write(effect_packet)
+        await self._write(effect_packet)
 
     @retry_bluetooth_connection_error
     async def update(self):

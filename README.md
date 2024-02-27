@@ -20,10 +20,10 @@ Working:
 
 - On / Off
 - Set RGB colour
+- Brightness
 
 Next:
 
-- Brightness
 - Effects
 - Status updates?
 
@@ -73,7 +73,53 @@ Brightness is odd.
 Minimum brightness is 0x6c 0x02 (27650)
 Maximum brightness is 0xff 0x0f (65295)
 
-It seems that the two brightness bytes do not represent a single value.  
+It seems that the two brightness bytes do not represent a single value.  Byte 4, the last byte, is a scale which stops at 0x0F.  Byte 3 is the smaller increments which seems to be an 8 bit number.  I don't think it's really necessary to have that level of granularity on these type of LEDs, so I've only implemented the 15 levels of brightness from byte 4.  This seems fine.
+
+## Effects
+
+The standard effects numbered from 0 to ?.  You don't seem to be able to specify a brightness or speed for them.
+
+```
+|---|--------------------------- header
+|   | ||------------------------ select effect
+|   | || ||--------------------- effect number
+55 04 01 00
+55 04 01 01
+55 04 01 06
+55 04 01 07
+```
+
+### Effect Speed
+
+```
+|---|--------------------------- header
+|   | ||------------------------ select effect speed
+|   | || ||--------------------- speed
+55 04 04 31
+55 04 04 59
+55 04 04 96
+55 04 04 bf
+55 04 04 ff
+```
+
+#### Custom Effects
+
+```
+
+|------| --------------------------------------------------------------------- custom effects header
+|      | ||------------------------------------------------------------------- speed probably 0-255
+|      | || ||---------------------------------------------------------------- effect type (merge, flash etc) probably 1 -> 5
+|      | || || ||------------------------------------------------------------- brightness probably 0-255
+|      | || || || |---------------| ------------------------------------------ likely all colour data. 2 bytes per colour? 565?
+55 05 01 00 03 00 fa f8 55 f9 b1 ff       -  RGB   merge,  slow,   dim
+55 05 01 00 03 ff fa f8 55 f9 b1 ff       -  RGB   merge,  slow,   bright
+55 05 01 7f 03 00 fa f8 55 f9 b1 ff       -  rgb   merge,  fast,   dim
+55 05 01 7f 03 ff fa f8 55 f9 b1 ff       -  rgb   merge,  fast,   bright
+55 05 01 7f 04 ff fa f8 55 f9 b1 ff       -  rgb   flash,  fast,   bright
+55 05 01 7f 05 ff fa f8 55 f9 b1 ff       -  rgb,  jump,   fast,   bright
+55 05 01 7f 05 ff fa f8 41 f9 fc fd 4d e4 -  rgrg, jump,   fast,   bright
+
+```
 
 ## Other projects that might be of interest
 
