@@ -22,28 +22,16 @@ import colorsys
 
 LOGGER = logging.getLogger(__name__)
 
-EFFECT_0  = "effect 0"
-EFFECT_1  = "effect 1"
-EFFECT_2  = "effect 2"
-EFFECT_3  = "effect 3"
-EFFECT_4  = "effect 4"
-EFFECT_5  = "effect 5"
-EFFECT_6  = "effect 6"
-EFFECT_7  = "effect 7"
-EFFECT_8  = "effect 8"
-EFFECT_9  = "effect 9"
-EFFECT_10 = "effect 10"
-EFFECT_11 = "effect 11"
-EFFECT_12 = "effect 12"
-EFFECT_13 = "effect 13"
-EFFECT_14 = "effect 14"
-EFFECT_15 = "effect 15"
-EFFECT_16 = "effect 16"
-EFFECT_17 = "effect 17"
-EFFECT_18 = "effect 18"
-EFFECT_19 = "effect 19"
-EFFECT_20 = "effect 20"
-EFFECT_21 = "effect 21"
+EFFECT_0  = "Cycle all effects"
+EFFECT_1  = "colour jump"
+EFFECT_2  = "colour fade"
+EFFECT_3  = "colour fade 2"
+EFFECT_4  = "RGB jump"
+EFFECT_5  = "Seven colour jump"
+EFFECT_6  = "white fade"
+EFFECT_7  = "white lightening"
+EFFECT_8  = "candle flicker"
+EFFECT_9  = "red blue fade"
 
 EFFECT_MAP = {
     EFFECT_0: 0,
@@ -55,19 +43,7 @@ EFFECT_MAP = {
     EFFECT_6: 6,
     EFFECT_7: 7,
     EFFECT_8: 8,
-    EFFECT_9: 9,
-    EFFECT_10:10,
-    EFFECT_11:11,
-    EFFECT_12:12,
-    EFFECT_13:13,
-    EFFECT_14:14,
-    EFFECT_15:15,
-    EFFECT_16:16,
-    EFFECT_17:17,
-    EFFECT_18:18,
-    EFFECT_19:19,
-    EFFECT_20:20,
-    EFFECT_21:21
+    EFFECT_9: 9
 }
 
 EFFECT_LIST = sorted(EFFECT_MAP)
