@@ -11,8 +11,6 @@ AliExpress link:  https://www.aliexpress.com/item/1005005485885067.html
 
 My lights report their name as: `L7161` and have a MAC address of `23:01:02:aa:10:84`.
 
-As with the [ELK-BLEDOB](https://github.com/8none1/elk-bledob) project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
-So let's breakout Wireshark and go fishing...
 
 ## Current State
 
@@ -25,7 +23,29 @@ Working:
 - Brightness
 - Limited effects with a fixed speed
 
+## Installation in Home Assistant
+
+## Installation
+
+### Requirements
+
+You need to have the bluetooth component configured and working in Home Assistant in order to use this integration.
+
+### HACS
+
+Add this repo to HACS as a custom repo.  Click through:
+
+- HACS -> Integrations -> Top right menu -> Custom Repositories
+- Paste the Github URL to this repo in to the Repository box
+- Choose category `Integration`
+- Click Add
+- Restart Home Assistant
+- HiLighting LED devices should start to appear in your Integrations page
+
 ## Sniffing
+
+As with the [ELK-BLEDOB](https://github.com/8none1/elk-bledob) project I will be using an nRF52840 BLE Sniffer rather than trying to get snoop logs off Android.
+So let's breakout Wireshark and go fishing...
 
 Tips if you're using Wireshark and a nRF52840 with the Nordic toolkit:
 
