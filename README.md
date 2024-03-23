@@ -9,6 +9,8 @@ AliExpress link:  https://www.aliexpress.com/item/1005005485885067.html
 
 ![image](https://github.com/8none1/hilighting_homeassistant/assets/6552931/317cab8a-c576-4db9-8aa8-8744dd775748)
 
+![image](https://github.com/8none1/hilighting_homeassistant/assets/6552931/5bb03ae0-b6ba-47ea-b27e-1a9519bb7eb1)
+
 My lights report their name as: `L7161` and have a MAC address of `23:01:02:aa:10:84`.
 
 
