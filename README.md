@@ -150,3 +150,4 @@ We could build a set of custom effects and hard code them as part of the integra
 - [BJ_LED](https://github.com/8none1/bj_led)
 - [ELK BLEDOB](https://github.com/8none1/elk-bledob)
 - [HiLighting LED](https://github.com/8none1/hilighting_homeassistant)
+- [BLELED LED Lamp](https://github.com/8none1/ledble-ledlamp)
