@@ -5,7 +5,7 @@ This time I paid £2.52 including tax and delivery for a 5M strip with an IR rem
 
 Something to be aware of is that the picture on the AliExpress page for the product doesn't necessarily represent the app or the controller that the lights will use.
 
-AliExpress link:  https://www.aliexpress.com/item/1005005485885067.html
+AliExpress link:  https://s.click.aliexpress.com/e/_DD74ZBn
 
 ![image](https://github.com/8none1/hilighting_homeassistant/assets/6552931/317cab8a-c576-4db9-8aa8-8744dd775748)
 
