@@ -153,10 +153,7 @@ class HILIGHTINGInstance:
         self._model = self._detect_model()
         
         LOGGER.debug(
-            "Model information for device %s : ModelNo %s. MAC: %s",
-            self._device.name,
-            self._model,
-            self._mac,
+            f"Model information for device {self._device.name} : ModelNo {self._model}. MAC: {self._mac}. Reset: {self._reset}. Delay: {self._delay}"
         )
 
     def _detect_model(self):

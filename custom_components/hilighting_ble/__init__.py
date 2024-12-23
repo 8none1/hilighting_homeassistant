@@ -14,7 +14,7 @@ PLATFORMS = ["light"]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
     reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
-    delay = entry.options.get(CONF_DELAY, None) or entry.data.get(CONF_DELAY, None)
+    delay = entry.options.get(CONF_DELAY, 120) or entry.data.get(CONF_DELAY, 120)
     LOGGER.debug("Config Reset data: %s and config delay data: %s", reset, delay)
 
     instance = HILIGHTINGInstance(entry.data[CONF_MAC], reset, delay, hass)
