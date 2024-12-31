@@ -22,6 +22,7 @@ import colorsys
 
 LOGGER = logging.getLogger(__name__)
 
+# TODO:  These effect names are not the same across all devices.  Move to a "Effect n" type name
 EFFECT_0  = "Cycle all effects"
 EFFECT_1  = "colour jump"
 EFFECT_2  = "colour fade"
@@ -49,7 +50,7 @@ EFFECT_MAP = {
 EFFECT_LIST = sorted(EFFECT_MAP)
 EFFECT_ID_NAME = {v: k for k, v in EFFECT_MAP.items()}
 
-NAME_ARRAY = ["L7161"]
+NAME_ARRAY = ["L7161", "L7183"]
 WRITE_CHARACTERISTIC_UUIDS = ["6e400002-b5a3-f393-e0a9-e50e24dcca9e"]
 TURN_ON_CMD  = [bytearray.fromhex("55 01 02 01")]
 TURN_OFF_CMD = [bytearray.fromhex("55 01 02 00")]
@@ -148,8 +149,8 @@ class HILIGHTINGInstance:
         self._effect_speed = 0x64
         self._color_mode = ColorMode.RGB
         self._write_uuid = None
-        self._turn_on_cmd = None
-        self._turn_off_cmd = None
+        self._turn_on_cmd  = bytearray.fromhex("55 01 02 01")
+        self._turn_off_cmd = bytearray.fromhex("55 01 02 00")
         self._model = self._detect_model()
         
         LOGGER.debug(
@@ -157,11 +158,10 @@ class HILIGHTINGInstance:
         )
 
     def _detect_model(self):
+        # TODO:  This device does seem to report a FW version.  Probably on manu data or a std read char.  Implement this properly.
         x = 0
         for name in NAME_ARRAY:
             if self._device.name.lower().startswith(name.lower()):
-                self._turn_on_cmd = TURN_ON_CMD[x]
-                self._turn_off_cmd = TURN_OFF_CMD[x]
                 return x
             x = x + 1
 
@@ -268,6 +268,7 @@ class HILIGHTINGInstance:
         effect_packet[3] = effect_id
         await self._write(effect_packet)
         speed_packet = bytearray.fromhex("55 04 04 7f") # Hard code the speed to 50% ish
+        # TODO:  Implement speed control as a number slider
         await self._write(speed_packet)
 
     @retry_bluetooth_connection_error
