@@ -56,6 +56,9 @@ class HILIGHTINGBLEFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._device = None
         self._instance = None
         self.name = None
+        self._model = None
+        self._firmware_version = None
+        self._manufacturer_name = None
         self._discovery_info: BluetoothServiceInfoBleak | None = None
         self._discovered_device: DeviceData | None = None
         self._discovered_devices = []
@@ -131,9 +134,17 @@ class HILIGHTINGBLEFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_validate(self, user_input: "dict[str, Any] | None" = None):
         if user_input is not None:
+            data = {CONF_MAC: self.mac,
+                    CONF_DELAY: 120,
+                    "name": self.name,
+                    "model" : self._model,
+                    "firmware_version" : self._firmware_version,
+                    "manufacturer_name" : self._manufacturer_name
+            }
+            LOGGER.debug(f"Data: {data}")
             if "flicker" in user_input:
                 if user_input["flicker"]:
-                    return self.async_create_entry(title=self.name, data={CONF_MAC: self.mac, "name": self.name})
+                    return self.async_create_entry(title=self.name, data=data)
                 return self.async_abort(reason="cannot_validate")
             
             if "retry" in user_input and not user_input["retry"]:
@@ -173,7 +184,7 @@ class HILIGHTINGBLEFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def toggle_light(self):
         if not self._instance:
-            self._instance = HILIGHTINGInstance(self.mac, False, 120, self.hass)
+            self._instance = HILIGHTINGInstance(self.mac, 120, self.hass)
         try:
             await self._instance.update()
             await self._instance.turn_on()
@@ -183,6 +194,9 @@ class HILIGHTINGBLEFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             await self._instance.turn_on()
             await asyncio.sleep(1)
             await self._instance.turn_off()
+            self._model = self._instance._model
+            self._firmware_version = self._instance._firmware_version
+            self._manufacturer_name = self._instance._manufacturer_name
         except (Exception) as error:
             return error
         finally:
@@ -206,9 +220,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
         errors = {}
-        options = self.config_entry.options or {CONF_RESET: False,CONF_DELAY: 120}
+        options = self.config_entry.options or {CONF_DELAY: 120}
         if user_input is not None:
-            return self.async_create_entry(title="", data={CONF_RESET: user_input[CONF_RESET], CONF_DELAY: user_input[CONF_DELAY]})
+            return self.async_create_entry(title="", data={CONF_DELAY: user_input[CONF_DELAY]})
 
         return self.async_show_form(
             step_id="user",

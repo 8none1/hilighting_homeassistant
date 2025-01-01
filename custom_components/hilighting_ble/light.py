@@ -90,6 +90,9 @@ class HILIGHTINGLight(LightEntity):
             },
             name=self.name,
             connections={(device_registry.CONNECTION_NETWORK_MAC, self._instance.mac)},
+            sw_version =   self._instance._model,
+            hw_version =   self._instance._firmware_version,
+            manufacturer = self._instance._manufacturer_name,
         )
 
     @property
