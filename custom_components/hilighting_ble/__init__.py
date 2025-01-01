@@ -3,21 +3,29 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event
 from homeassistant.const import CONF_MAC, EVENT_HOMEASSISTANT_STOP
+from homeassistant.const import Platform
 
-from .const import DOMAIN, CONF_RESET, CONF_DELAY
+from .const import DOMAIN, CONF_DELAY
 from .hilightingble import HILIGHTINGInstance
 import logging
 
 LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["light"]
+# PLATFORMS = ["light"]
+PLATFORMS: list[Platform] = [
+    Platform.LIGHT,
+    Platform.NUMBER
+]
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
-    reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
+    #reset = entry.options.get(CONF_RESET, None) or entry.data.get(CONF_RESET, None)
     delay = entry.options.get(CONF_DELAY, 120) or entry.data.get(CONF_DELAY, 120)
-    LOGGER.debug("Config Reset data: %s and config delay data: %s", reset, delay)
+    config = entry.data
+    options = entry.options
 
-    instance = HILIGHTINGInstance(entry.data[CONF_MAC], reset, delay, hass)
+    LOGGER.debug("Config delay data: %s", delay)
+    instance = HILIGHTINGInstance(entry.data[CONF_MAC], delay, hass, config, options)
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = instance
 

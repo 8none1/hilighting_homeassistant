@@ -2,6 +2,7 @@ import asyncio
 from homeassistant.components import bluetooth
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.components.light import (ColorMode)
+from homeassistant.components.light import EFFECT_OFF
 from bleak.backends.device import BLEDevice
 from bleak.backends.service import BleakGATTCharacteristic, BleakGATTServiceCollection
 from bleak.exc import BleakDBusError
@@ -15,45 +16,25 @@ from bleak_retry_connector import (
 )
 from typing import Any, TypeVar, cast, Tuple
 from collections.abc import Callable
-#import traceback
 import logging
-import colorsys
+#import colorsys
 
 
 LOGGER = logging.getLogger(__name__)
 
-# TODO:  These effect names are not the same across all devices.  Move to a "Effect n" type name
-EFFECT_0  = "Cycle all effects"
-EFFECT_1  = "colour jump"
-EFFECT_2  = "colour fade"
-EFFECT_3  = "colour fade 2"
-EFFECT_4  = "RGB jump"
-EFFECT_5  = "Seven colour jump"
-EFFECT_6  = "white fade"
-EFFECT_7  = "white lightening"
-EFFECT_8  = "candle flicker"
-EFFECT_9  = "red blue fade"
-
-EFFECT_MAP = {
-    EFFECT_0: 0,
-    EFFECT_1: 1,
-    EFFECT_2: 2,
-    EFFECT_3: 3,
-    EFFECT_4: 4,
-    EFFECT_5: 5,
-    EFFECT_6: 6,
-    EFFECT_7: 7,
-    EFFECT_8: 8,
-    EFFECT_9: 9
-}
-
+EFFECT_MAP = {}
+for e in range(10):
+    EFFECT_MAP[f"Effect {e}"] = e
 EFFECT_LIST = sorted(EFFECT_MAP)
-EFFECT_ID_NAME = {v: k for k, v in EFFECT_MAP.items()}
+EFFECT_ID_TO_NAME = {v: k for k, v in EFFECT_MAP.items()}
 
 NAME_ARRAY = ["L7161", "L7183"]
-WRITE_CHARACTERISTIC_UUIDS = ["6e400002-b5a3-f393-e0a9-e50e24dcca9e"]
-TURN_ON_CMD  = [bytearray.fromhex("55 01 02 01")]
-TURN_OFF_CMD = [bytearray.fromhex("55 01 02 00")]
+WRITE_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+FIRMWARE_REVISION_UUID    = "00002a26-0000-1000-8000-00805f9b34fb"
+SW_NUMBER_UUID            = "00002a28-0000-1000-8000-00805f9b34fb"
+MANUFACTURER_NAME_UUID    = "00002a29-0000-1000-8000-00805f9b34fb"
+TURN_ON_CMD               = [bytearray.fromhex("55 01 02 01")]
+TURN_OFF_CMD              = [bytearray.fromhex("55 01 02 00")]
 DEFAULT_ATTEMPTS = 3
 BLEAK_BACKOFF_TIME = 0.25
 RETRY_BACKOFF_EXCEPTIONS = (BleakDBusError)
@@ -125,12 +106,14 @@ def retry_bluetooth_connection_error(func: WrapFuncType) -> WrapFuncType:
 
 
 class HILIGHTINGInstance:
-    def __init__(self, address, reset: bool, delay: int, hass) -> None:
+    def __init__(self, address, delay: int, hass, data={}, options={}) -> None:
         self.loop = asyncio.get_running_loop()
         self._mac = address
-        self._reset = reset
         self._delay = delay
         self._hass = hass
+        #self._data = data
+        self._options = options
+        
         self._device: BLEDevice | None = None
         self._device = bluetooth.async_ble_device_from_address(self._hass, address)
         if not self._device:
@@ -149,22 +132,51 @@ class HILIGHTINGInstance:
         self._effect_speed = 0x64
         self._color_mode = ColorMode.RGB
         self._write_uuid = None
+        self._manufacturer_name_char = None
+        self._firmware_revision_char = None
+        self._model_number_char      = None
         self._turn_on_cmd  = bytearray.fromhex("55 01 02 01")
         self._turn_off_cmd = bytearray.fromhex("55 01 02 00")
-        self._model = self._detect_model()
-        
+        self._model             = data.get("model", None)
+        self._manufacturer_name = data.get("manufacturer_name", None)
+        self._firmware_version  = data.get("firmware_version", None)
+
         LOGGER.debug(
-            f"Model information for device {self._device.name} : ModelNo {self._model}. MAC: {self._mac}. Reset: {self._reset}. Delay: {self._delay}"
+            f"Model information for device {self._device.name} : ModelNo {self._model}. MAC: {self._mac}. Data: {data}. Options: {self._options}"
         )
+        LOGGER.debug(f"Manufacturer name: {self._manufacturer_name}")
+        LOGGER.debug(f"Firmware version: {self._firmware_version}")
+        LOGGER.debug(f"Model number: {self._model}")
 
-    def _detect_model(self):
-        # TODO:  This device does seem to report a FW version.  Probably on manu data or a std read char.  Implement this properly.
-        x = 0
-        for name in NAME_ARRAY:
-            if self._device.name.lower().startswith(name.lower()):
-                return x
-            x = x + 1
+    async def _retrieve_device_info(self):
+        if self._model is None:
+            LOGGER.debug("Looking up model number")
+            m = await self._read_characteristic(self._model_number_char)
+            LOGGER.debug(f"Model number: {m}")
+            if m: self._model = m.decode('ascii')
+        if self._manufacturer_name is None:
+            LOGGER.debug("Looking up manu name")
+            m = await self._read_characteristic(self._manufacturer_name_char)
+            LOGGER.debug(f"Manufacturer name: {m}")
+            if m: self._manufacturer_name = m.decode('ascii')
+        if self._firmware_version is None:
+            LOGGER.debug("Looking up fw number")
+            m = await self._read_characteristic(self._firmware_revision_char)
+            LOGGER.debug(f"Firmware version: {m}")
+            if m: self._firmware_version = m.decode('ascii')
+        
+        return bool(self._model and self._manufacturer_name and self._firmware_version)
 
+    async def _read_characteristic(self, char: BleakGATTCharacteristic):
+        if not char:
+            LOGGER.error(f"No characteristic to read")
+            return None
+        if self._client is not None:
+            data = await self._client.read_gatt_char(char.uuid)
+            LOGGER.debug(f"Char read data: {data}")
+            return data
+        return None
+    
     async def _write(self, data: bytearray):
         """Send command to device and read response."""
         await self._ensure_connected()
@@ -177,10 +189,6 @@ class HILIGHTINGInstance:
     @property
     def mac(self):
         return self._device.address
-
-    @property
-    def reset(self):
-        return self._reset
 
     @property
     def name(self):
@@ -244,6 +252,7 @@ class HILIGHTINGInstance:
         rgb_packet[4] = green
         rgb_packet[5] = blue
         await self._write(rgb_packet)
+        self._effect = EFFECT_OFF
     
     @retry_bluetooth_connection_error
     async def set_brightness(self, brightness: int):
@@ -267,14 +276,23 @@ class HILIGHTINGInstance:
         LOGGER.debug('Effect name: %s', effect)
         effect_packet[3] = effect_id
         await self._write(effect_packet)
-        speed_packet = bytearray.fromhex("55 04 04 7f") # Hard code the speed to 50% ish
-        # TODO:  Implement speed control as a number slider
+    
+    @retry_bluetooth_connection_error
+    async def set_effect_speed(self, speed: int):
+        speed_packet = bytearray.fromhex("55 04 04 7f")
+        speed_packet[3] = int(speed * 2.55)
+        LOGGER.debug(f"Speed packet: {speed_packet}")
+        speed_packet_str = "0x" + "".join(f"{byte:02x}" for byte in speed_packet)
+        LOGGER.debug(f"Speed packet: {speed_packet_str}")
         await self._write(speed_packet)
 
     @retry_bluetooth_connection_error
     async def update(self):
         LOGGER.debug("%s: Update in hilighting called", self.name)
-        # I dont think we have anything to update
+        # if self._model is None:
+        #     self._model = await self._detect_model()
+        #     LOGGER.debug(f"Model: {self._model}")
+        
 
     async def _ensure_connected(self) -> None:
         """Ensure connection to device is established."""
@@ -297,27 +315,42 @@ class HILIGHTINGInstance:
                 self._device,
                 self.name,
                 self._disconnected,
-                cached_services=self._cached_services,
+                # cached_services=self._cached_services,
+                use_cached_services=True,
                 ble_device_callback=lambda: self._device,
             )
             LOGGER.debug("%s: Connected", self.name)
             resolved = self._resolve_characteristics(client.services)
+            
+            LOGGER.debug(f"Resolved: {resolved}")
             if not resolved:
                 # Try to handle services failing to load
                 #resolved = self._resolve_characteristics(await client.get_services())
+                LOGGER.debug(f"Chars were not resolved.  Trying again...")
                 resolved = self._resolve_characteristics(client.services)
+                LOGGER.debug(f"After trying to resolve: Resolved: {resolved}")
             self._cached_services = client.services if resolved else None
 
             self._client = client
+            await self._retrieve_device_info()
             self._reset_disconnect_timer()
 
     def _resolve_characteristics(self, services: BleakGATTServiceCollection) -> bool:
         """Resolve characteristics."""
-        for characteristic in WRITE_CHARACTERISTIC_UUIDS:
-            if char := services.get_characteristic(characteristic):
+        LOGGER.debug(f"Resolving characteristics for {self.name}")
+        if char := services.get_characteristic(WRITE_CHARACTERISTIC_UUID):
                 self._write_uuid = char
-                break
-        return bool(self._write_uuid)
+        if char := services.get_characteristic(MANUFACTURER_NAME_UUID):
+            self._manufacturer_name_char = char
+        if char := services.get_characteristic(FIRMWARE_REVISION_UUID):
+            self._firmware_revision_char = char
+        if char := services.get_characteristic(SW_NUMBER_UUID):
+            self._model_number_char = char
+            LOGGER.debug(f"Model number char: {char}")
+            LOGGER.debug(f"Model number char UUID: {char.uuid}")
+            LOGGER.debug(f"Type of char: {type(char)}")
+        LOGGER.debug(f"Chars: Write: {self._write_uuid} Manu name: {self._manufacturer_name_char} Firmware rev: {self._firmware_revision_char} Model num: {self._model_number_char}")
+        return bool(self._write_uuid and self._manufacturer_name_char and self._firmware_revision_char and self._model_number_char)
 
     def _reset_disconnect_timer(self) -> None:
         """Reset disconnect timer."""

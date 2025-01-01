@@ -23,7 +23,7 @@ Working:
 - On / Off
 - Set RGB colour
 - Brightness
-- Limited effects with a fixed speed
+- Limited effects with variable speed
 
 ## Installation in Home Assistant
 
@@ -113,8 +113,8 @@ The standard effects numbered from 0 to 9.  You don't seem to be able to specify
 
 ```
 |---|--------------------------- header
-|   | ||------------------------ select effect speed (0-255)
-|   | || ||--------------------- speed
+|   | ||------------------------ select effect speed
+|   | || ||--------------------- speed (0-255)
 55 04 04 31
 55 04 04 59
 55 04 04 96
